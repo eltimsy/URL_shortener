@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+    <!-- Write EJS code here to display shortened links -->
+    <h2> Shortened Urls</h2>
+    <ul>
+      <% for(var key in templateVars.urls) { %>
+        <li><%= key %> - <%= templateVars.urls[key] %></li>
+      <% }; %>
+    </ul>
+
+    <h2>Links to link shorteners</h2>
+    <a href =<%= shortenLink %>><%= shortenLink %></a>
+
+</body>
+</html>
