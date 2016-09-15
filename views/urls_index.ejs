@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
+    <% include partials/_header %>
 
     <!-- Write EJS code here to display shortened links -->
     <h2> Shortened Urls</h2>
     <ul>
       <% for(var key in templateVars.urls) { %>
-        <li><%= key %> - <%= templateVars.urls[key] %></li>
+        <li><%= key %>- <%= templateVars.urls[key] %>
+        <form method="POST" action='urls/<%= key %>?_method=DELETE'>
+        <a href='/urls/<%= key %>'>edit</a>
+          <button type='submit'>delete</button>
+        </form></li>
       <% }; %>
     </ul>
 

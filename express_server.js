@@ -5,8 +5,12 @@ var app = express();
 app.set('view engine', 'ejs');
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 var generate = require('./random-string.js');
+var methodOverride = require('method-override')
+app.use(methodOverride('_method'))
 
 var urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
@@ -34,8 +38,9 @@ app.get('/urls/new', (req, res) => {
 app.post('/urls', (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters
   let shortURL = generate(6)
+  
   urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`http://localhost:8080/urls/${shortURL}`);         // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -46,9 +51,23 @@ app.get("/u/:shortURL", (req, res) => {
 app.get('/urls/:id', (req, res) => {
   let templateVars = { shortURL: req.params.id };
   res.render('urls_show', {
-    templateVars: templateVars.shortURL
+    templateVars: templateVars.shortURL,
+    longURL: urlDatabase[req.params.id]
   });
 });
+
+app.delete('/urls/:id', (req, res) => {
+  delete urlDatabase[req.params.id]
+  res.redirect('/urls')
+
+});
+
+app.put('/urls/:id', (req, res) => {
+  urlDatabase[req.params.id] = req.body.changeURL
+  //urlDatabase[req.params.i] = urlDatabase[req.params.id]
+  res.redirect('/urls')
+})
+
 
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
