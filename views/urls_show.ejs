@@ -6,6 +6,7 @@
 
     <h2>Link you typed in</h2>
     <a href ='/u/<%= templateVars %>'><%= templateVars %></a>
+    <a href ='<%= longURL %>'><%= longURL %></a>
     <form method="POST" action="<%= templateVars %>?_method=PUT">
       <input  type="url" name="changeURL" placeholder="http://" style="width: 300px">
       <button type='submit'>Update</button>

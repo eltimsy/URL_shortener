@@ -1,4 +1,5 @@
 'use strict';
+const MONGODB_URI = 'mongodb://127.0.0.1:27017/url_shortener';
 
 var express = require('express');
 var app = express();
@@ -9,8 +10,11 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 var generate = require('./random-string.js');
-var methodOverride = require('method-override')
-app.use(methodOverride('_method'))
+var methodOverride = require('method-override');
+app.use(methodOverride('_method'));
+var getLongURL = require('./longurl.js');
+var accessData = require('./accessdatabase.js');
+
 
 var urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
@@ -24,11 +28,15 @@ app.get('/', (req, res) => {
 
 app.get('/urls', (req, res) => {
   let templateVars = { urls: urlDatabase };
-  res.render('urls_index', {
-    templateVars: templateVars,
-    shortenLink: shortenLink
+  accessData(MONGODB_URI, (err, database) => {
+    //let longURL = urlDatabase[req.params.shortURL];
+    res.render('urls_index', {
+      templateVars: database,
+      shortenLink: shortenLink
 
+    });
   });
+
 });
 
 app.get('/urls/new', (req, res) => {
@@ -38,22 +46,30 @@ app.get('/urls/new', (req, res) => {
 app.post('/urls', (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters
   let shortURL = generate(6)
-  
+
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  getLongURL(MONGODB_URI, req.params.shortURL, (err, longURL) => {
+    //let longURL = urlDatabase[req.params.shortURL];
+    res.redirect(longURL);
+  });
 });
 
 app.get('/urls/:id', (req, res) => {
   let templateVars = { shortURL: req.params.id };
-  res.render('urls_show', {
-    templateVars: templateVars.shortURL,
-    longURL: urlDatabase[req.params.id]
+
+
+  getLongURL(MONGODB_URI, templateVars.shortURL, (err, longURL) => {
+    res.render('urls_show', {
+      templateVars: templateVars.shortURL,
+      longURL: longURL
+    });
+
   });
+
 });
 
 app.delete('/urls/:id', (req, res) => {

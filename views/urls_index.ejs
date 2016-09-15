@@ -6,10 +6,10 @@
     <!-- Write EJS code here to display shortened links -->
     <h2> Shortened Urls</h2>
     <ul>
-      <% for(var key in templateVars.urls) { %>
-        <li><%= key %>- <%= templateVars.urls[key] %>
-        <form method="POST" action='urls/<%= key %>?_method=DELETE'>
-        <a href='/urls/<%= key %>'>edit</a>
+      <% for(var i = 0; i < templateVars.length; i++) { %>
+        <li><%= templateVars[i].shortURL %>- <%= templateVars[i].longURL %>
+        <form method="POST" action='urls/<%= templateVars[i].shortURL %>?_method=DELETE'>
+        <a href='/urls/<%= templateVars[i].shortURL %>'>edit</a>
           <button type='submit'>delete</button>
         </form></li>
       <% }; %>
