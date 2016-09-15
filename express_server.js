@@ -14,6 +14,9 @@ var methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 var getLongURL = require('./longurl.js');
 var accessData = require('./accessdatabase.js');
+var insertURL = require('./insert-data.js');
+var deleteURL = require('./delete-url.js');
+var updateURL = require('./update-url.js');
 
 
 var urlDatabase = {
@@ -26,29 +29,28 @@ app.get('/', (req, res) => {
   res.end("Hello!");
 });
 
-app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase };
-  accessData(MONGODB_URI, (err, database) => {
-    //let longURL = urlDatabase[req.params.shortURL];
-    res.render('urls_index', {
-      templateVars: database,
-      shortenLink: shortenLink
-
+app.route('/urls')
+  .get((req, res) => {
+    let templateVars = { urls: urlDatabase };
+    accessData(MONGODB_URI, (err, database) => {
+      //let longURL = urlDatabase[req.params.shortURL];
+      res.render('urls_index', {
+        templateVars: database,
+        shortenLink: shortenLink
+      });
+    });
+  })
+  .post((req, res) => {
+    console.log(req.body);  // debug statement to see POST parameters
+    let shortURL = generate(6)
+    insertURL(MONGODB_URI, shortURL, req.body.longURL, () => {
+      //urlDatabase[shortURL] = req.body.longURL;
+      res.redirect(`/urls/${shortURL}`);
     });
   });
 
-});
-
 app.get('/urls/new', (req, res) => {
   res.render('urls_new');
-});
-
-app.post('/urls', (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  let shortURL = generate(6)
-
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -58,31 +60,29 @@ app.get("/u/:shortURL", (req, res) => {
   });
 });
 
-app.get('/urls/:id', (req, res) => {
-  let templateVars = { shortURL: req.params.id };
+app.route('/urls/:id')
+  .get((req, res) => {
+    let templateVars = { shortURL: req.params.id };
 
-
-  getLongURL(MONGODB_URI, templateVars.shortURL, (err, longURL) => {
-    res.render('urls_show', {
-      templateVars: templateVars.shortURL,
-      longURL: longURL
+    getLongURL(MONGODB_URI, templateVars.shortURL, (err, longURL) => {
+      res.render('urls_show', {
+        templateVars: templateVars.shortURL,
+        longURL: longURL
+      });
     });
-
+  })
+  .delete((req, res) => {
+    deleteURL(MONGODB_URI, req.params.id, () => {
+      //delete urlDatabase[req.params.id]
+      res.redirect('/urls')
+    });
+  })
+  .put((req, res) => {
+    updateURL(MONGODB_URI, req.params.id, req.body.changeURL, () => {
+      //urlDatabase[req.params.id] = req.body.changeURL
+      res.redirect('/urls')
+    });
   });
-
-});
-
-app.delete('/urls/:id', (req, res) => {
-  delete urlDatabase[req.params.id]
-  res.redirect('/urls')
-
-});
-
-app.put('/urls/:id', (req, res) => {
-  urlDatabase[req.params.id] = req.body.changeURL
-  //urlDatabase[req.params.i] = urlDatabase[req.params.id]
-  res.redirect('/urls')
-})
 
 
 app.get('/urls.json', (req, res) => {
