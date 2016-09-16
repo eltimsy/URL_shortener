@@ -21,8 +21,6 @@ app.use(methodOverride('_method'));
 MongoClient.connect(MONGODB_URI, (err, db) => {
   conn = db;
 });
-//var cookiePraser = require('cookie-parser');
-//app.use(cookieParser());
 
 var shortenLink = 'https://goo.gl/';
 
@@ -34,7 +32,7 @@ app.route('/urls')
   .get((req, res) => {
     allAccess.getDatabase(conn, (err, urls) => {
       res.render('./urls/index', {
-        urls: urls,    /// urls: urls
+        urls: urls,
         shortenLink: shortenLink
       });
     });
@@ -71,7 +69,7 @@ app.route('/urls/:id')
     allAccess.longURL(conn, short.shortURL, (err, longURL) => {
       if(longURL !== null) {
         res.render('./urls/show', {
-          shortURL: short.shortURL,  // shortURL: req.params.id
+          shortURL: short.shortURL,
           longURL: longURL.longURL
         });
       } else {
@@ -89,10 +87,6 @@ app.route('/urls/:id')
       res.redirect('/urls');
     });
   });
-
-//app.get('/urls.json', (req, res) => {
-  //res.json(urlDatabase);
-//});
 
 
 app.get('/hello', (req, res) => {
