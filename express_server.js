@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const MONGODB_URI = 'mongodb://127.0.0.1:27017/url_shortener';
 
-const generate = require('./random-string.js');
+const generate = require('./lib/random-string.js');
 const allAccess = require('./lib/all-access');
 var conn;
 
