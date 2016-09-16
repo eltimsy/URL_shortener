@@ -17,12 +17,9 @@ var accessData = require('./accessdatabase.js');
 var insertURL = require('./insert-data.js');
 var deleteURL = require('./delete-url.js');
 var updateURL = require('./update-url.js');
+var cookiePraser = require('cookie-parser');
+app.use(cookieParser());
 
-
-var urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com'
-};
 var shortenLink = 'https://goo.gl/';
 
 app.get('/', (req, res) => {
@@ -78,13 +75,11 @@ app.route('/urls/:id')
   })
   .delete((req, res) => {
     deleteURL(MONGODB_URI, req.params.id, () => {
-      //delete urlDatabase[req.params.id]
       res.redirect('/urls');
     });
   })
   .put((req, res) => {
     updateURL(MONGODB_URI, req.params.id, req.body.changeURL, () => {
-      //urlDatabase[req.params.id] = req.body.changeURL
       res.redirect('/urls');
     });
   });
