@@ -13,8 +13,7 @@ module.exports = function deleteURL(db, short, cb) {
     db.collection('urls').deleteOne( {
       shortURL: short
       }, function(err, result) {
-        //console.log(result);
         cb();
-    });
+      });
   });
-};
+}

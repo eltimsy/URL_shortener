@@ -16,6 +16,5 @@ module.exports = function insertURL(db, short, long, cb) {
       }, function(err, result) {
         cb();
     });
-
   });
 };

@@ -4,7 +4,7 @@ const MONGODB_URI = 'mongodb://127.0.0.1:27017/url_shortener';
 var express = require('express');
 var app = express();
 app.set('view engine', 'ejs');
-var PORT = process.env.PORT || 8080; // default port 8080
+var PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({
   extended: true
@@ -33,7 +33,6 @@ app.route('/urls')
   .get((req, res) => {
     let templateVars = { urls: urlDatabase };
     accessData(MONGODB_URI, (err, database) => {
-      //let longURL = urlDatabase[req.params.shortURL];
       res.render('urls_index', {
         templateVars: database,
         shortenLink: shortenLink
@@ -41,12 +40,15 @@ app.route('/urls')
     });
   })
   .post((req, res) => {
-    console.log(req.body);  // debug statement to see POST parameters
+    console.log(req.body);
     let shortURL = generate(6)
-    insertURL(MONGODB_URI, shortURL, req.body.longURL, () => {
-      //urlDatabase[shortURL] = req.body.longURL;
-      res.redirect(`/urls/${shortURL}`);
-    });
+    if(req.body.longURL.search(/^(ftp|http|https):\/\/[^ "]+$/)!== -1) {
+      insertURL(MONGODB_URI, shortURL, req.body.longURL, () => {
+        res.redirect(`/urls/${shortURL}`);
+      });
+    } else {
+      res.redirect('/urls/new')
+    }
   });
 
 app.get('/urls/new', (req, res) => {
@@ -55,7 +57,6 @@ app.get('/urls/new', (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   getLongURL(MONGODB_URI, req.params.shortURL, (err, longURL) => {
-    //let longURL = urlDatabase[req.params.shortURL];
     res.redirect(longURL);
   });
 });
@@ -65,22 +66,26 @@ app.route('/urls/:id')
     let templateVars = { shortURL: req.params.id };
 
     getLongURL(MONGODB_URI, templateVars.shortURL, (err, longURL) => {
-      res.render('urls_show', {
-        templateVars: templateVars.shortURL,
-        longURL: longURL
-      });
+      if(longURL !== null) {
+        res.render('urls_show', {
+          templateVars: templateVars.shortURL,
+          longURL: longURL.longURL
+        });
+      } else {
+        res.redirect('/urls');
+      }
     });
   })
   .delete((req, res) => {
     deleteURL(MONGODB_URI, req.params.id, () => {
       //delete urlDatabase[req.params.id]
-      res.redirect('/urls')
+      res.redirect('/urls');
     });
   })
   .put((req, res) => {
     updateURL(MONGODB_URI, req.params.id, req.body.changeURL, () => {
       //urlDatabase[req.params.id] = req.body.changeURL
-      res.redirect('/urls')
+      res.redirect('/urls');
     });
   });
 

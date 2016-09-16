@@ -13,11 +13,9 @@ module.exports = function getLongURL(db, shortURL, cb) {
     let query = { "shortURL": shortURL };
     db.collection("urls").findOne(query, (err, result) => {
       if (err) {
-        db.close();
-        return cb(err);
+        return cb(err, result);
       }
-      db.close();
-      return cb(null, result.longURL);
+      return cb(null, result);
     });
-  })
+  });
 }
