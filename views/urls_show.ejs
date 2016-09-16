@@ -11,9 +11,11 @@
     <!-- Write EJS code here to display shortened links -->
 
     <h2>Link:</h2>
-    <p><a href ='/u/<%= templateVars %>'><%= templateVars %></a>
-    This is your link:
-    <a href ='<%= longURL %>'><%= longURL %></a></p>
+    <p>
+      <a href ='/u/<%= templateVars %>'><%= templateVars %></a>
+      This is your link:
+      <a href='<%= longURL %>'><%= longURL %></a>
+    </p>
     <form method="POST" action="<%= templateVars %>?_method=PUT">
       <input  type="url" name="changeURL" placeholder="http://" style="width: 300px">
       <button type='submit'>Update</button>

@@ -4,23 +4,24 @@
     <% include partials/_head %>
 </head>
 <body>
-    <header>
-      <% include partials/_header %>
-    </header>
-    <!-- Write EJS code here to display shortened links -->
-    <h2> Shortened Urls</h2>
-    <ul>
-      <% for(var i = 0; i < templateVars.length; i++) { %>
-        <li><%= templateVars[i].shortURL %>- <%= templateVars[i].longURL %>
+  <header>
+    <% include partials/_header %>
+  </header>
+  <!-- Write EJS code here to display shortened links -->
+  <h2>Shortened Urls</h2>
+  <ul>
+    <% for(var i = 0; i < templateVars.length; i++) { %>
+      <li>
+        <%= templateVars[i].shortURL %>- <%= templateVars[i].longURL %>
         <form method="POST" action='/urls/<%= templateVars[i].shortURL %>?_method=DELETE'>
-        <a href='/urls/<%= templateVars[i].shortURL %>'>edit</a>
+          <a href='/urls/<%= templateVars[i].shortURL %>'>edit</a>
           <button type='submit'>delete</button>
-        </form></li>
-      <% }; %>
-    </ul>
+        </form>
+      </li>
+    <% }; %>
+  </ul>
 
-    <h2>Links to link shorteners</h2>
-    <a href =<%= shortenLink %>><%= shortenLink %></a>
-
+  <h2>Links to link shorteners</h2>
+  <a href='<%= shortenLink %>'><%= shortenLink %></a>
 </body>
 </html>

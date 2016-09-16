@@ -1,24 +1,29 @@
 'use strict';
 const MONGODB_URI = 'mongodb://127.0.0.1:27017/url_shortener';
 
-var express = require('express');
-var app = express();
-app.set('view engine', 'ejs');
-var PORT = process.env.PORT || 8080;
+const express = require('express');
+const app = express();
+
+const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
+
+const generate = require('./random-string.js');
+const methodOverride = require('method-override');
+
+const getLongURL = require('./lib/long-url');
+const accessData = require('./lib/access-database');
+const insertURL = require('./lib/insert-data');
+const deleteURL = require('./lib/delete-url');
+const updateURL = require('./lib/update-url');
+
+app.set('view engine', 'ejs');
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-var generate = require('./random-string.js');
-var methodOverride = require('method-override');
 app.use(methodOverride('_method'));
-var getLongURL = require('./longurl.js');
-var accessData = require('./accessdatabase.js');
-var insertURL = require('./insert-data.js');
-var deleteURL = require('./delete-url.js');
-var updateURL = require('./update-url.js');
-var cookiePraser = require('cookie-parser');
-app.use(cookieParser());
+//var cookiePraser = require('cookie-parser');
+//app.use(cookieParser());
 
 var shortenLink = 'https://goo.gl/';
 
@@ -28,10 +33,10 @@ app.get('/', (req, res) => {
 
 app.route('/urls')
   .get((req, res) => {
-    let templateVars = { urls: urlDatabase };
+    //let templateVars = { urls: urlDatabase };
     accessData(MONGODB_URI, (err, database) => {
       res.render('urls_index', {
-        templateVars: database,
+        templateVars: database,    /// urls: urls
         shortenLink: shortenLink
       });
     });
@@ -53,8 +58,9 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  getLongURL(MONGODB_URI, req.params.shortURL, (err, longURL) => {
-    res.redirect(longURL);
+  getLongURL(MONGODB_URI, req.params.shortURL, (err, url) => {
+    console.log(longURL)
+    res.redirect(url.longURL);
   });
 });
 
@@ -65,7 +71,7 @@ app.route('/urls/:id')
     getLongURL(MONGODB_URI, templateVars.shortURL, (err, longURL) => {
       if(longURL !== null) {
         res.render('urls_show', {
-          templateVars: templateVars.shortURL,
+          templateVars: templateVars.shortURL,  // shortURL: req.params.id
           longURL: longURL.longURL
         });
       } else {
@@ -85,9 +91,9 @@ app.route('/urls/:id')
   });
 
 
-app.get('/urls.json', (req, res) => {
-  res.json(urlDatabase);
-});
+//app.get('/urls.json', (req, res) => {
+  //res.json(urlDatabase);
+//});
 
 
 app.get('/hello', (req, res) => {
