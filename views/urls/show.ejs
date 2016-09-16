@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <% include partials/_head %>
-</head>
+  <head>
+    <% include ../partials/_head %>
+  </head>
 
-<body>
+  <body>
     <header>
-      <% include partials/_header %>
+      <% include ../partials/_header %>
     </header>
-    <!-- Write EJS code here to display shortened links -->
 
     <h2>Link:</h2>
     <p>
-      <a href ='/u/<%= templateVars %>'><%= templateVars %></a>
+      <a href ='/u/<%= shortURL %>'><%= shortURL %></a>
       This is your link:
       <a href='<%= longURL %>'><%= longURL %></a>
     </p>
-    <form method="POST" action="<%= templateVars %>?_method=PUT">
+    <form method="POST" action="<%= shortURL %>?_method=PUT">
       <input  type="url" name="changeURL" placeholder="http://" style="width: 300px">
       <button type='submit'>Update</button>
     </form>
 
-</body>
+  </body>
 </html>

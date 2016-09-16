@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <% include ../partials/_head %>
+  </head>
+  <body>
+    <header>
+      <% include ../partials/_header %>
+    </header>
+
+    <h2>Shortened Urls</h2>
+    <ul>
+      <% for(let i in urls) { %>
+        <li>
+          <%= urls[i].shortURL %>- <%= urls[i].longURL %>
+          <form method="POST" action='/urls/<%= urls[i].shortURL %>?_method=DELETE'>
+            <a href='/urls/<%= urls[i].shortURL %>'>edit</a>
+            <button type='submit'>delete</button>
+          </form>
+        </li>
+      <% }; %>
+    </ul>
+
+    <h2>Links to link shorteners</h2>
+    <a href='<%= shortenLink %>'><%= shortenLink %></a>
+  </body>
+</html>
