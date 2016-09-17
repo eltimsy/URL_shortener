@@ -1,11 +1,12 @@
 'use strict';
+require('dotenv').config();
 const MongoClient = require('mongodb').MongoClient;
 const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const app = express();
 const PORT = process.env.PORT || 8080;
-const MONGODB_URI = 'mongodb://127.0.0.1:27017/url_shortener';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const generate = require('./lib/random-string.js');
 const allAccess = require('./lib/all-access');
