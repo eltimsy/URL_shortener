@@ -1,3 +1,4 @@
+'use strict';
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,7 +11,7 @@
 
     <h2>Shortened Urls</h2>
     <ul>
-      <% for(let i in urls) { %>
+      <% for(var i in urls) { %>
         <li>
           <%= urls[i].shortURL %>- <%= urls[i].longURL %>
           <form method="POST" action='/urls/<%= urls[i].shortURL %>?_method=DELETE'>
