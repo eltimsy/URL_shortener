@@ -7,10 +7,13 @@ const methodOverride = require('method-override');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const MONGODB_URI = process.env.MONGODB_URI;
+const cookieParser = require('cookie-parser');
 
 const generate = require('./lib/random-string.js');
 const allAccess = require('./lib/all-access');
 let conn;
+
+app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 
@@ -25,6 +28,16 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
 
 var shortenLink = 'https://goo.gl/';
 
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls')
+});
+
+app.post('/login', (req, res) => {
+  res.cookie('username', req.body.username)
+  res.redirect('/urls')
+});
+
 app.get('/', (req, res) => {
   res.end("Hello!");
 });
@@ -34,7 +47,8 @@ app.route('/urls')
     allAccess.getDatabase(conn, (err, urls) => {
       res.render('./urls/index', {
         urls: urls,
-        shortenLink: shortenLink
+        shortenLink: shortenLink,
+        username: req.cookies["username"]
       });
     });
   })
@@ -50,7 +64,9 @@ app.route('/urls')
   });
 
 app.get('/urls/new', (req, res) => {
-  res.render('./urls/new');
+  res.render('./urls/new', {
+    username: req.cookies["username"]
+  });
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -71,7 +87,8 @@ app.route('/urls/:id')
       if(longURL !== null) {
         res.render('./urls/show', {
           shortURL: short.shortURL,
-          longURL: longURL.longURL
+          longURL: longURL.longURL,
+          username: req.cookies["username"]
         });
       } else {
         res.redirect('/urls');
